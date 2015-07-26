@@ -42,10 +42,15 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        Toast.makeText(getActivity(), "You click some shit.", Toast.LENGTH_SHORT).show();
+        StringBuilder sb = new StringBuilder();
+        sb.append("You clicked the poster for \"");
+        String originalTitle = ((Movie) mImageAdapter.getItem(i)).getOriginalTitle();
+        sb.append(originalTitle);
+        sb.append("\"");
+        Toast.makeText(getActivity(), sb.toString(), Toast.LENGTH_SHORT).show();
     }
 
-    public void onMovieResultsReady(List<String> jsonObjects) {
+    public void onMovieResultsReady(List<Movie> jsonObjects) {
         mImageAdapter.updateMovieResults(jsonObjects);
     }
 }

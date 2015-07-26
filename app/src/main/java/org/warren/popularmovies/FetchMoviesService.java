@@ -7,9 +7,16 @@ import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.ResultReceiver;
+import android.util.Log;
 
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 
 /**
@@ -22,36 +29,86 @@ public class FetchMoviesService extends IntentService {
     public static final String BUNDLE_KEY_REQUEST_RESULT = "request_result";
     public static final String RESULT_RECEIVER = "result_receiver";
 
-    private final IBinder mBinder = new FetchMoviesBinder();
-
-
     public FetchMoviesService() {
         super("FetchMoviesService");
     }
-
-
 
     @Override
     protected void onHandleIntent(Intent intent) {
         String apiKey = (String) intent.getSerializableExtra(API_STRING_EXTRA);
         ResultReceiver receiver = intent.getParcelableExtra(RESULT_RECEIVER);
+        Uri builtUri = null;
         if (apiKey != null && receiver != null) {
-            Uri builtUri = Uri.parse(BASE_URL)
+            builtUri = Uri.parse(BASE_URL)
                     .buildUpon()
                     .appendQueryParameter("sort_by", "popularity.desc")
                     .appendQueryParameter(API_STRING_EXTRA, apiKey)
                     .build();
         }
-    }
 
-    public class FetchMoviesBinder extends Binder {
-        FetchMoviesService handleMovieResults() {
-            return FetchMoviesService.this;
+        // These two need to be declared outside the try/catch
+        // so that they can be closed in the finally block.
+        HttpURLConnection urlConnection = null;
+        BufferedReader reader = null;
+
+        // Will contain the raw JSON response as a string.
+        String moviesJsonStr = null;
+
+        if (builtUri != null) {
+            try {
+                // Construct the URL for the OpenWeatherMap query
+                // Possible parameters are avaiable at OWM's forecast API page, at
+                // http://openweathermap.org/API#forecast
+                URL url = new URL(builtUri.toString());
+
+                // Create the request to OpenWeatherMap, and open the connection
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.connect();
+
+                // Read the input stream into a String
+                InputStream inputStream = urlConnection.getInputStream();
+                StringBuilder sb = new StringBuilder();
+                if (inputStream == null) {
+                    // Nothing to do.
+                    return;
+                }
+                reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
+                    // But it does make debugging a *lot* easier if you print out the completed
+                    // buffer for debugging.
+                    sb.append(line + "\n");
+                }
+
+                if (sb.length() == 0) {
+                    // Stream was empty.  No point in parsing.
+                    return;
+                }
+                moviesJsonStr = sb.toString();
+                Bundle resultBundle = new Bundle();
+                resultBundle.putString(BUNDLE_KEY_REQUEST_RESULT, moviesJsonStr);
+                receiver.send(urlConnection.getResponseCode(), resultBundle);
+            } catch (IOException e) {
+                Log.e("PlaceholderFragment", "Error ", e);
+                // If the code didn't successfully get the weather data, there's no point in attemping
+                // to parse it.
+            } finally {
+                if (urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (final IOException e) {
+                        Log.e("PlaceholderFragment", "Error closing stream", e);
+                    }
+                }
+            }
         }
     }
 
-    public interface FetchMoviesServiceHandler {
-        void handleResults(List<JSONObject> jsonObjects);
-    }
 
 }

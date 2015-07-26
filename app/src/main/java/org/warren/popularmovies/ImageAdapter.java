@@ -20,21 +20,21 @@ public class ImageAdapter extends BaseAdapter {
     private static final String BASE_URL = "http://image.tmdb.org/t/p/w185";
 
     private Context mContext;
-    private List<String> mMovieURLs;
+    private List<Movie> mMovies;
 
     public ImageAdapter(Context c) {
         mContext = c;
-        mMovieURLs = new ArrayList<>();
+        mMovies = new ArrayList<>();
     }
 
     @Override
     public int getCount() {
-        return mMovieURLs.size();
+        return mMovies.size();
     }
 
     @Override
     public Object getItem(int i) {
-        return mMovieURLs.get(i);
+        return mMovies.get(i);
     }
 
     @Override
@@ -47,20 +47,19 @@ public class ImageAdapter extends BaseAdapter {
         ImageView squaredImageView;
         if (view == null) {
             squaredImageView = new ImageView(mContext);
-            squaredImageView.setLayoutParams(new GridView.LayoutParams(85, 85));
+            squaredImageView.setLayoutParams(new GridView.LayoutParams(250, 400));
             squaredImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             squaredImageView.setPadding(8, 8, 8, 8);
-            String url = BASE_URL + getItem(i);
-            Picasso.with(mContext).load(url).into(squaredImageView);
         } else {
             squaredImageView = (ImageView) view;
         }
-
+        String url = BASE_URL + ((Movie)getItem(i)).getPosterPath();
+        Picasso.with(mContext).load(url).into(squaredImageView);
         return squaredImageView;
     }
 
-    public void updateMovieResults(List<String> movieURLs) {
-        mMovieURLs = movieURLs;
+    public void updateMovieResults(List<Movie> movies) {
+        mMovies = movies;
         notifyDataSetChanged();
     }
 }
