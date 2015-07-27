@@ -4,10 +4,9 @@
     android:id="@+id/main_grid_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:columnWidth="90dp"
+    android:verticalSpacing="20dp"
+    android:columnWidth="105dp"
     android:numColumns="auto_fit"
-    android:verticalSpacing="10dp"
-    android:horizontalSpacing="10dp"
     android:stretchMode="spacingWidthUniform"
     />
 

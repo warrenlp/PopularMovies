@@ -49,8 +49,8 @@ public class ImageAdapter extends BaseAdapter {
         ImageView squaredImageView;
         if (view == null) {
             squaredImageView = new ImageView(mContext);
-            squaredImageView.setLayoutParams(new GridView.LayoutParams(200, 300));
-            squaredImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            squaredImageView.setLayoutParams(new GridView.LayoutParams(300, 300));
+            squaredImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
         } else {
             squaredImageView = (ImageView) view;
         }

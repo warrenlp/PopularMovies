@@ -51,7 +51,8 @@ public class DetailsFragment extends Fragment {
                     .into(new Target() {
                         @Override
                         public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
-                            localImageView.setImageBitmap(bitmap);
+                            Bitmap bMapScaled = Bitmap.createScaledBitmap(bitmap, 400, 700, true);
+                            localImageView.setImageBitmap(bMapScaled);
                         }
 
                         @Override
