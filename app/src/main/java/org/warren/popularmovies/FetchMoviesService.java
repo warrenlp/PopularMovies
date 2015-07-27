@@ -92,8 +92,8 @@ public class FetchMoviesService extends IntentService {
                 resultBundle.putString(BUNDLE_KEY_REQUEST_RESULT, moviesJsonStr);
                 receiver.send(urlConnection.getResponseCode(), resultBundle);
             } catch (IOException e) {
-                Log.e("PlaceholderFragment", "Error ", e);
-                // If the code didn't successfully get the weather data, there's no point in attemping
+                Log.e("FetchMoviesService", "Error ", e);
+                // If the code didn't successfully get the movies data, there's no point in attempting
                 // to parse it.
             } finally {
                 if (urlConnection != null) {
@@ -103,7 +103,7 @@ public class FetchMoviesService extends IntentService {
                     try {
                         reader.close();
                     } catch (final IOException e) {
-                        Log.e("PlaceholderFragment", "Error closing stream", e);
+                        Log.e("FetchMoviesService", "Error closing stream", e);
                     }
                 }
             }

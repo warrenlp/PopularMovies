@@ -10,6 +10,8 @@ import android.widget.ImageView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -17,7 +19,7 @@ import java.util.List;
  */
 public class ImageAdapter extends BaseAdapter {
 
-    private static final String BASE_URL = "http://image.tmdb.org/t/p/w185";
+    public static final String BASE_URL = "http://image.tmdb.org/t/p/w185";
 
     private Context mContext;
     private List<Movie> mMovies;
@@ -47,9 +49,8 @@ public class ImageAdapter extends BaseAdapter {
         ImageView squaredImageView;
         if (view == null) {
             squaredImageView = new ImageView(mContext);
-            squaredImageView.setLayoutParams(new GridView.LayoutParams(250, 400));
+            squaredImageView.setLayoutParams(new GridView.LayoutParams(200, 300));
             squaredImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            squaredImageView.setPadding(8, 8, 8, 8);
         } else {
             squaredImageView = (ImageView) view;
         }
@@ -61,5 +62,31 @@ public class ImageAdapter extends BaseAdapter {
     public void updateMovieResults(List<Movie> movies) {
         mMovies = movies;
         notifyDataSetChanged();
+    }
+
+    public void sortByPopularity() {
+        Collections.sort(mMovies, new SortByPopularityComparator());
+        notifyDataSetChanged();
+    }
+
+    public void sortByHighestRated() {
+        Collections.sort(mMovies, new SortByHighestRatedComparator());
+        notifyDataSetChanged();
+    }
+
+    private static class SortByPopularityComparator implements Comparator<Movie> {
+
+        @Override
+        public int compare(Movie lhs, Movie rhs) {
+            return -1 * lhs.getPopularity().compareTo(rhs.getPopularity());
+        }
+    }
+
+    private static class SortByHighestRatedComparator implements Comparator<Movie> {
+
+        @Override
+        public int compare(Movie lhs, Movie rhs) {
+            return -1 * lhs.getVoteAverage().compareTo(rhs.getVoteAverage());
+        }
     }
 }

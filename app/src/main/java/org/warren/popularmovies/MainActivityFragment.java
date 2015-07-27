@@ -1,5 +1,8 @@
 package org.warren.popularmovies;
 
+import android.app.Activity;
+import android.app.FragmentManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -21,30 +24,56 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
 
     private ImageAdapter mImageAdapter;
     private GridView mGridView;
+    private FragmentOnItemClickListener mFragmentOnItemClickListener;
+    private FragmentOnItemClickListener mDummyFragmentOnItemClickListener = new FragmentOnItemClickListener() {
+
+        @Override
+        public void onItemClick(Bundle bundle) {
+            // Do nothing default
+        }
+    };
 
     public MainActivityFragment() {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_main, container, false);
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+
+        if (!(activity instanceof FragmentOnItemClickListener)) {
+            throw new IllegalStateException("activity must be of typ FragmentOnItemClickListener");
+        }
+        mFragmentOnItemClickListener = (FragmentOnItemClickListener) activity;
+        mImageAdapter = new ImageAdapter(activity);
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        mImageAdapter = new ImageAdapter(getActivity());
-        mGridView = (GridView) getActivity().findViewById(R.id.main_grid_view);
+    public void onDetach() {
+        super.onDetach();
+        mFragmentOnItemClickListener = mDummyFragmentOnItemClickListener;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        mGridView = (GridView) rootView.findViewById(R.id.main_grid_view);
         mGridView.setAdapter(mImageAdapter);
         mGridView.setOnItemClickListener(this);
+        return rootView;
     }
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        Movie clickedMovie = (Movie) mImageAdapter.getItem(i);
+
+        Bundle movieBundle = new Bundle();
+        movieBundle.putParcelable(Movie.CLICKED_MOVIE, clickedMovie);
+        mFragmentOnItemClickListener.onItemClick(movieBundle);
+
         StringBuilder sb = new StringBuilder();
         sb.append("You clicked the poster for \"");
-        String originalTitle = ((Movie) mImageAdapter.getItem(i)).getOriginalTitle();
+        String originalTitle = clickedMovie.getOriginalTitle();
         sb.append(originalTitle);
         sb.append("\"");
         Toast.makeText(getActivity(), sb.toString(), Toast.LENGTH_SHORT).show();
@@ -52,5 +81,19 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
 
     public void onMovieResultsReady(List<Movie> jsonObjects) {
         mImageAdapter.updateMovieResults(jsonObjects);
+    }
+
+    public void sortByPopularity() {
+        mImageAdapter.sortByPopularity();
+        Toast.makeText(getActivity(), "Sorted By: Popularity", Toast.LENGTH_SHORT).show();
+    }
+
+    public void sortByHighestRated() {
+        mImageAdapter.sortByHighestRated();
+        Toast.makeText(getActivity(), "Sorted By: Highest Rated", Toast.LENGTH_SHORT).show();
+    }
+
+    public interface FragmentOnItemClickListener {
+        void onItemClick(Bundle bundle);
     }
 }
