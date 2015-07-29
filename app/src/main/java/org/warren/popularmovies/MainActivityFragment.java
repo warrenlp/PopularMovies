@@ -22,6 +22,8 @@ import java.util.List;
  */
 public class MainActivityFragment extends Fragment implements AdapterView.OnItemClickListener {
 
+    private static final String MOVIE_LIST = "movie_list";
+
     private ImageAdapter mImageAdapter;
     private GridView mGridView;
     private FragmentOnItemClickListener mFragmentOnItemClickListener;
@@ -48,6 +50,17 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (savedInstanceState != null && mImageAdapter != null) {
+            List<Movie> movies = savedInstanceState.getParcelableArrayList(MOVIE_LIST);
+            if (movies != null) {
+                mImageAdapter.updateMovieResults(movies);
+            }
+        }
+    }
+
+    @Override
     public void onDetach() {
         super.onDetach();
         mFragmentOnItemClickListener = mDummyFragmentOnItemClickListener;
@@ -61,6 +74,17 @@ public class MainActivityFragment extends Fragment implements AdapterView.OnItem
         mGridView.setAdapter(mImageAdapter);
         mGridView.setOnItemClickListener(this);
         return rootView;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList(MOVIE_LIST, mImageAdapter.getMovieArrayList());
+        super.onSaveInstanceState(outState);
     }
 
     @Override

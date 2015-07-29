@@ -29,12 +29,22 @@ public class DetailsFragment extends Fragment {
         // Do nothing
     }
 
+    public Movie getMovie() {
+        return mMovie;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments().containsKey(Movie.CLICKED_MOVIE)) {
             mMovie = getArguments().getParcelable(Movie.CLICKED_MOVIE);
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable(Movie.CLICKED_MOVIE, mMovie);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -65,7 +75,6 @@ public class DetailsFragment extends Fragment {
 
                         }
                     });
-            // TODO: Adjust image size to be approx. 2x as large.
             ((TextView)rootView.findViewById(R.id.original_title)).setText(mMovie.getOriginalTitle());
             ((TextView)rootView.findViewById(R.id.release_date)).setText(mMovie.getReleaseDateString());
             ((TextView)rootView.findViewById(R.id.vote_average)).setText(Double.toString(mMovie.getVoteAverage()));

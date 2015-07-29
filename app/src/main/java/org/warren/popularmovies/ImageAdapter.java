@@ -44,6 +44,10 @@ public class ImageAdapter extends BaseAdapter {
         return i;
     }
 
+    public ArrayList<Movie> getMovieArrayList() {
+        return (ArrayList<Movie>) mMovies;
+    }
+
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         ImageView squaredImageView;
