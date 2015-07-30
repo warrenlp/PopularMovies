@@ -30,17 +30,10 @@ public class MainActivity extends ActionBarActivity implements MainActivityFragm
     private static final String POSTER_PATH = "poster_path";
     private static final String POPULARITY = "popularity";
     private static final String VOTE_AVERAGE = "vote_average";
-    private static final String CURRENT_FRAGMENT = "current_fragment";
     public static final String SHOW_OVER_MENU = "show_over_menu";
-
-//    private enum FragmentID {
-//        MAIN_ACTIVITY_FRAGMENT,
-//        DETAIL_FRAGMENT
-//    }
 
     private ResultReceiver mReceiver;
     private Menu mMenu;
-//    private FragmentID mCurrentFragment;
     private boolean mMenuGroupVisible;
 
     @Override
@@ -53,17 +46,15 @@ public class MainActivity extends ActionBarActivity implements MainActivityFragm
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction.add(R.id.fragment_container, maf);
             fragmentTransaction.commit();
-//            mCurrentFragment = FragmentID.MAIN_ACTIVITY_FRAGMENT;
             mMenuGroupVisible = true;
 
             mReceiver = new ResultReceiver(new Handler()) {
 
                 @Override
                 protected void onReceiveResult(int resultCode, Bundle resultData) {
-                    int httpStatus = resultCode;
                     String jsonResult = null;
                     List<Movie> jsonResults = new ArrayList<>();
-                    if (httpStatus == 200) {
+                    if (resultCode == 200) {
                         jsonResult = resultData.getString(FetchMoviesService.BUNDLE_KEY_REQUEST_RESULT);
                         JSONArray resultsArray = null;
                         try {
@@ -112,33 +103,12 @@ public class MainActivity extends ActionBarActivity implements MainActivityFragm
                         if (backStackEntryCount < 1) {
                             mMenuGroupVisible = true;
                             showOverMenu();
-//                            mCurrentFragment = FragmentID.MAIN_ACTIVITY_FRAGMENT;
                         }
                     }
                 });
-    }
 
-//    private void restorePreviousFragment(Bundle savedInstanceState) {
-//        FragmentID fragID = (FragmentID) savedInstanceState.getSerializable(CURRENT_FRAGMENT);
-//        if (fragID.equals(FragmentID.MAIN_ACTIVITY_FRAGMENT)) {
-//            MainActivityFragment maf = new MainActivityFragment();
-//            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-//            fragmentTransaction.replace(R.id.fragment_container, maf);
-//            fragmentTransaction.commit();
-//            mCurrentFragment = FragmentID.MAIN_ACTIVITY_FRAGMENT;
-//        } else {
-//            DetailsFragment detailsFragment = new DetailsFragment();
-//            Bundle bundle = new Bundle();
-//            bundle.putParcelable(Movie.CLICKED_MOVIE, detailsFragment.getMovie());
-//            detailsFragment.setArguments(bundle);
-//            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-//            fragmentTransaction.replace(R.id.fragment_container, detailsFragment);
-//            fragmentTransaction.addToBackStack(null);
-//            fragmentTransaction.commit();
-//            mCurrentFragment = FragmentID.DETAIL_FRAGMENT;
-//            showOverMenu(false);
-//        }
-//    }
+        doFetchMoviesGet();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -154,12 +124,6 @@ public class MainActivity extends ActionBarActivity implements MainActivityFragm
             return;
         }
         mMenu.setGroupEnabled(R.id.main_menu_group, mMenuGroupVisible);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        doFetchMoviesGet();
     }
 
     @Override
@@ -204,7 +168,6 @@ public class MainActivity extends ActionBarActivity implements MainActivityFragm
         fragmentTransaction.replace(R.id.fragment_container, detailsFragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
-//        mCurrentFragment = FragmentID.DETAIL_FRAGMENT;
         mMenuGroupVisible = false;
         showOverMenu();
     }

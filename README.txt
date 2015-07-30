@@ -1,0 +1,1 @@
+Please insert your own API key for MoviesDB into the strings.xml file under the item <string name="movie_db_api_key"></string>
