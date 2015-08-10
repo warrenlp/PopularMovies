@@ -20,6 +20,7 @@ public class Movie implements Parcelable {
     private Double mPopularity;
     private Double mVoteAverage;
     private static final SimpleDateFormat mSimpleDateFormat = new SimpleDateFormat("MMMM dd, yyyy");
+    private boolean mFavorite;
 
     public Movie(int id, String originalTitle, String overview, Date releaseDate, String posterPath, Double popularity, Double voteAverage) {
         mId = id;
@@ -29,6 +30,7 @@ public class Movie implements Parcelable {
         mPosterPath = posterPath;
         mPopularity = popularity;
         mVoteAverage = voteAverage;
+        mFavorite = false;
     }
 
     public int getId() {
@@ -82,6 +84,7 @@ public class Movie implements Parcelable {
         mReleaseDate = (Date) in.readSerializable();
         mPosterPath = in.readString();
         mVoteAverage = in.readDouble();
+        mFavorite = in.readByte() != 0;
     }
 
     @Override
@@ -97,5 +100,14 @@ public class Movie implements Parcelable {
         dest.writeSerializable(mReleaseDate);
         dest.writeString(mPosterPath);
         dest.writeDouble(mVoteAverage);
+        dest.writeByte((byte) (mFavorite ? 1 : 0));
+    }
+
+    public boolean isFavorite() {
+        return mFavorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        this.mFavorite = favorite;
     }
 }

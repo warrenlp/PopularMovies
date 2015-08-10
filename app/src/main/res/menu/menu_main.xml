@@ -7,5 +7,7 @@
             android:orderInCategory="100" app:showAsAction="never" />
         <item android:id="@+id/sort_by_highest_rated" android:title="@string/sort_by_highest_rated"
             android:orderInCategory="100" app:showAsAction="never" />
+        <item android:id="@+id/view_favorites" android:title="@string/view_favorites"
+            android:orderInCategory="100" app:showAsAction="never" />
     </group>
 </menu>
