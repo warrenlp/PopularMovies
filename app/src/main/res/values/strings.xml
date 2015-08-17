@@ -4,4 +4,7 @@
     <string name="movie_db_api_key"></string>
     <string name="sort_by_popularity">Sort By: Most Popular</string>
     <string name="sort_by_highest_rated">Sort By: Highest Rated</string>
+    <string name="mark_as_favorite">Mark As Favorite</string>
+    <string name="unmark_as_favorite">Unmark As Favorite</string>
+    <string name="view_favorites">View Favorites</string>
 </resources>

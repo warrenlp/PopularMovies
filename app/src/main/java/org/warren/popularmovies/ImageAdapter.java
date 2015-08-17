@@ -9,6 +9,9 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -22,21 +25,28 @@ public class ImageAdapter extends BaseAdapter {
     public static final String BASE_URL = "http://image.tmdb.org/t/p/w185";
 
     private Context mContext;
-    private List<Movie> mMovies;
+    private List<Movie> mAllMovies;
+    private List<Movie> mShowMovies;
+    private List<Movie> mFavoriteMovies;
+    private boolean mShowFavorites;
+    private JSONArray mFavoriteMoviesJSONArray;
 
     public ImageAdapter(Context c) {
         mContext = c;
-        mMovies = new ArrayList<>();
+        mAllMovies = new ArrayList<>();
+        mShowMovies = new ArrayList<>();
+        mFavoriteMovies = new ArrayList<>();
+        mShowFavorites = false;
     }
 
     @Override
     public int getCount() {
-        return mMovies.size();
+        return mShowMovies.size();
     }
 
     @Override
     public Object getItem(int i) {
-        return mMovies.get(i);
+        return mShowMovies.get(i);
     }
 
     @Override
@@ -45,7 +55,7 @@ public class ImageAdapter extends BaseAdapter {
     }
 
     public ArrayList<Movie> getMovieArrayList() {
-        return (ArrayList<Movie>) mMovies;
+        return (ArrayList<Movie>) mAllMovies;
     }
 
     @Override
@@ -64,18 +74,62 @@ public class ImageAdapter extends BaseAdapter {
     }
 
     public void updateMovieResults(List<Movie> movies) {
-        mMovies = movies;
+        mAllMovies = movies;
+        mShowMovies = mAllMovies;
         notifyDataSetChanged();
     }
 
     public void sortByPopularity() {
-        Collections.sort(mMovies, new SortByPopularityComparator());
+        mShowMovies = mAllMovies;
+        Collections.sort(mShowMovies, new SortByPopularityComparator());
         notifyDataSetChanged();
     }
 
     public void sortByHighestRated() {
-        Collections.sort(mMovies, new SortByHighestRatedComparator());
+        mShowMovies = mAllMovies;
+        Collections.sort(mShowMovies, new SortByHighestRatedComparator());
         notifyDataSetChanged();
+    }
+
+    public void setShowFavorites(boolean showFavorites) {
+        this.mShowFavorites = showFavorites;
+    }
+
+    public boolean getShowFavorites() {
+        return mShowFavorites;
+    }
+
+    public void updateFavoriteMovies(JSONArray favoriteMovies) {
+        mFavoriteMoviesJSONArray = favoriteMovies;
+        parseFavoriteMoviesJSONArray();
+        mShowMovies = mFavoriteMovies;
+        notifyDataSetChanged();
+    }
+
+    private void parseFavoriteMoviesJSONArray() {
+        mFavoriteMovies.clear();
+        for (int i=0; i<mFavoriteMoviesJSONArray.length(); ++i) {
+            for (Movie movie : mAllMovies) {
+                int favoriteMovieID = 0;
+                try {
+                    favoriteMovieID = (int) mFavoriteMoviesJSONArray.get(i);
+                    if (movie.getId() == favoriteMovieID) {
+                        mFavoriteMovies.add(movie);
+                        break;
+                    }
+                } catch (JSONException e) {
+                    throw new IllegalStateException(e.toString());
+                }
+            }
+        }
+    }
+
+    public String getJSONFavoritesString() {
+        if (mFavoriteMoviesJSONArray == null) {
+            return null;
+        } else {
+            return mFavoriteMoviesJSONArray.toString();
+        }
     }
 
     private static class SortByPopularityComparator implements Comparator<Movie> {
