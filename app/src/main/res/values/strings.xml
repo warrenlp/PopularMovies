@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Popular Movies</string>
     <string name="action_settings">Settings</string>
-    <string name="movie_db_api_key">17c39cc6667ba9686abf2acde9515fcc</string>
+    <string name="movie_db_api_key"></string>
     <string name="sort_by_popularity">Sort By: Most Popular</string>
     <string name="sort_by_highest_rated">Sort By: Highest Rated</string>
     <string name="mark_as_favorite">Mark As Favorite</string>
