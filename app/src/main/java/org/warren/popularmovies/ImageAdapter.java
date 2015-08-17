@@ -125,7 +125,11 @@ public class ImageAdapter extends BaseAdapter {
     }
 
     public String getJSONFavoritesString() {
-        return mFavoriteMoviesJSONArray.toString();
+        if (mFavoriteMoviesJSONArray == null) {
+            return null;
+        } else {
+            return mFavoriteMoviesJSONArray.toString();
+        }
     }
 
     private static class SortByPopularityComparator implements Comparator<Movie> {
